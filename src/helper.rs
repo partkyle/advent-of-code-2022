@@ -1,3 +1,4 @@
+#[cfg(test)]
 pub mod helper {
     use reqwest::blocking::Response;
     use std::{env, fs, path::PathBuf};

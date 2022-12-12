@@ -1,3 +1,4 @@
+#[cfg(test)]
 pub mod day01 {
     use itertools::Itertools;
     use reqwest::blocking::Response;

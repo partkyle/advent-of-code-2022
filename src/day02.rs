@@ -1,3 +1,4 @@
+#[cfg(test)]
 pub mod day02 {
     use reqwest::blocking::Response;
     use std::fmt::Debug;
