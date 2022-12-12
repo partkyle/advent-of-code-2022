@@ -1,0 +1,14 @@
+# text=auto: Use git's autodetection to determine if a file is a text file.
+# eol=lf: Normalize text files to lf line endings in the repo, but native in working directory.
+#
+# Git checks the first 8000 bytes of a file to determine if it is binary.
+# https://stackoverflow.com/questions/57030698/do-i-really-need-to-specify-all-binary-files-in-gitattributes
+* text=auto eol=lf
+
+# Force scripts to use native representation.
+*.sh text eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# Explicitly label binary files.
+*.{png,jpg,jpeg,gif,webp,woff,woff2} binary
