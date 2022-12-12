@@ -2,6 +2,7 @@
 pub mod day03 {
     use std::collections::HashSet;
 
+    use itertools::Itertools;
     use reqwest::blocking::Response;
 
     pub fn priority(c: char) -> u8 {
@@ -33,7 +34,7 @@ pub mod day03 {
             .lines()
             .map(split_into_parts)
             .map(|[a, b]| [create_set_of_chars(a), create_set_of_chars(b)])
-            // now find the union
+            // now find the intersection
             .map(|[a, b]| {
                 let collisions: Vec<&char> = a.intersection(&b).collect();
                 collisions.iter().map(|&&c| priority(c) as i32).sum::<i32>()
@@ -43,8 +44,25 @@ pub mod day03 {
         Ok(result)
     }
 
-    pub fn part2(_response: Response) -> Result<isize, Box<dyn std::error::Error>> {
-        todo!("not doing it");
+    pub fn part2(response: Response) -> Result<i32, Box<dyn std::error::Error>> {
+        let result: i32 = response
+            .text()?
+            .lines()
+            .map(|bag| create_set_of_chars(bag))
+            .chunks(3)
+            .into_iter()
+            .map(|mut bags| {
+                let a = bags.next().unwrap();
+                let b = bags.next().unwrap();
+                let c = bags.next().unwrap();
+
+                let interim: HashSet<char> = a.intersection(&b).map(|&c| c).collect();
+                let result = c.intersection(&interim);
+                result.map(|&c| priority(c) as i32).sum::<i32>()
+            })
+            .sum();
+
+        Ok(result)
     }
 }
 
