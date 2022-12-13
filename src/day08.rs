@@ -21,7 +21,7 @@ pub mod day08 {
         }
 
         pub fn north<'a>(&'a self, x: usize, y: usize) -> impl Iterator<Item = &'a T> {
-            (0..y).flat_map(move |i| self.get(x, i))
+            (0..y).rev().flat_map(move |i| self.get(x, i))
         }
 
         pub fn south<'a>(&'a self, x: usize, y: usize) -> impl Iterator<Item = &'a T> {
@@ -33,7 +33,7 @@ pub mod day08 {
         }
 
         pub fn west<'a>(&'a self, x: usize, y: usize) -> impl Iterator<Item = &'a T> {
-            (0..x).flat_map(move |i| self.get(i, y))
+            (0..x).rev().flat_map(move |i| self.get(i, y))
         }
 
         pub fn hidden(&self, x: usize, y: usize) -> bool {
@@ -43,6 +43,37 @@ pub mod day08 {
                 && self.south(x, y).any(|i| i >= value)
                 && self.east(x, y).any(|i| i >= value)
                 && self.west(x, y).any(|i| i >= value)
+        }
+
+        // take until we see one that is our height or higher
+        // we can't use take_while, because we still want the last one
+        // if it's larger than the first
+        fn take_until<'a, U: 'a + PartialOrd>(
+            iter: &mut impl Iterator<Item = &'a U>,
+            my_height: &U,
+        ) -> Vec<&'a U> {
+            let mut result = vec![];
+
+            for i in iter {
+                result.push(i);
+
+                if my_height <= i {
+                    break;
+                }
+            }
+
+            result
+        }
+
+        pub fn scenic_score(&self, x: usize, y: usize) -> usize {
+            let value = self.get(x, y).unwrap();
+
+            let north_line: Vec<&T> = Grid::<T>::take_until(&mut self.north(x, y), value);
+            let south_line: Vec<&T> = Grid::<T>::take_until(&mut self.south(x, y), value);
+            let east_line: Vec<&T> = Grid::<T>::take_until(&mut self.east(x, y), value);
+            let west_line: Vec<&T> = Grid::<T>::take_until(&mut self.west(x, y), value);
+
+            north_line.len() * south_line.len() * east_line.len() * west_line.len()
         }
     }
 
@@ -77,8 +108,20 @@ pub mod day08 {
         Ok(count)
     }
 
-    pub fn part2(text: String) -> Result<isize, Box<dyn std::error::Error>> {
-        todo!("not doing it");
+    pub fn part2(text: String) -> Result<usize, Box<dyn std::error::Error>> {
+        let grid = new_from_string(text)?;
+
+        let mut max = 0;
+        for y in 0..grid.height() {
+            for x in 0..grid.width() {
+                let score = grid.scenic_score(x, y);
+                if score > max {
+                    max = score;
+                }
+            }
+        }
+
+        Ok(max)
     }
 }
 
@@ -90,10 +133,13 @@ mod test {
 
     const DAY: usize = 8;
 
+    fn example() -> impl Into<String> {
+        ["30373", "25512", "65332", "33549", "35390"].join("\n")
+    }
+
     #[test]
     fn visible() {
-        let grid =
-            new_from_string(["30373", "25512", "65332", "33549", "35390"].join("\n")).unwrap();
+        let grid = new_from_string(example()).unwrap();
 
         let tests = [
             // edges
@@ -111,6 +157,19 @@ mod test {
                 "expected ({},{}) to be {}",
                 x, y, expected
             );
+        }
+    }
+
+    #[test]
+    fn scenic() {
+        let grid = new_from_string(example()).unwrap();
+
+        let tests = [((0, 0), 0), ((2, 1), 4), ((2, 3), 8)];
+
+        for ((x, y), expected) in tests {
+            let actual = grid.scenic_score(x, y);
+            println!("{:?}", grid.get(x, y));
+            assert_eq!(actual, expected, "wrong score for ({},{})", x, y);
         }
     }
 
