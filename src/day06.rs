@@ -2,8 +2,6 @@
 pub mod day06 {
     use std::collections::HashSet;
 
-    use reqwest::blocking::Response;
-
     pub fn all_unique(s: &str) -> bool {
         let chars: HashSet<char> = s.chars().collect();
         chars.len() == s.len()
@@ -21,15 +19,13 @@ pub mod day06 {
         None
     }
 
-    pub fn part1(response: Response) -> Result<usize, Box<dyn std::error::Error>> {
-        let text = response.text()?;
+    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
         let page_size = 4;
         let answer = find_packet_character_count(text, page_size);
         answer.ok_or("no answer found".into())
     }
 
-    pub fn part2(response: Response) -> Result<usize, Box<(dyn std::error::Error + 'static)>> {
-        let text = response.text()?;
+    pub fn part2(text: String) -> Result<usize, Box<(dyn std::error::Error + 'static)>> {
         let page_size = 14;
         let answer = find_packet_character_count(text, page_size);
         answer.ok_or("no answer found".into())
@@ -42,7 +38,7 @@ mod test {
 
     use super::day06;
 
-    const DAY: isize = 6;
+    const DAY: usize = 6;
 
     #[test]
     fn test_all_unique() {

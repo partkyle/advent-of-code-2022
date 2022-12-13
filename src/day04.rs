@@ -2,8 +2,6 @@
 pub mod day04 {
     use std::collections::{hash_map::RandomState, HashSet};
 
-    use reqwest::blocking::Response;
-
     pub struct Section {
         start: isize,
         end: isize,
@@ -49,8 +47,7 @@ pub mod day04 {
         }
     }
 
-    pub fn part1(response: Response) -> Result<usize, Box<dyn std::error::Error>> {
-        let text = response.text()?;
+    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
         let lines = text.lines();
 
         let result = lines
@@ -66,8 +63,7 @@ pub mod day04 {
         Ok(result)
     }
 
-    pub fn part2(response: Response) -> Result<usize, Box<dyn std::error::Error>> {
-        let text = response.text()?;
+    pub fn part2(text: String) -> Result<usize, Box<dyn std::error::Error>> {
         let lines = text.lines();
 
         let rows = lines
@@ -93,12 +89,12 @@ mod test {
 
     use super::day04;
 
-    const DAY: isize = 4;
+    const DAY: usize = 4;
 
     #[test]
     fn row_overlap() {
         let a = day04::Section::new(1, 5);
-        assert_eq!(a.to_seq(), vec!(1,2,3,4,5));
+        assert_eq!(a.to_seq(), vec!(1, 2, 3, 4, 5));
     }
 
     #[test]

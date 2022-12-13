@@ -1,7 +1,5 @@
 #[cfg(test)]
 pub mod day05 {
-    use reqwest::blocking::Response;
-
     fn create_boxes(boxes_str: &str) -> Vec<Vec<char>> {
         let boxes: Vec<Vec<char>> = boxes_str.lines().map(|s| s.chars().collect()).collect();
 
@@ -58,8 +56,7 @@ pub mod day05 {
         Ok((stacks, instructions.map_err(|e| e.to_string())?))
     }
 
-    pub fn part1(response: Response) -> Result<String, Box<dyn std::error::Error>> {
-        let text = response.text()?;
+    pub fn part1(text: String) -> Result<String, Box<dyn std::error::Error>> {
         let (mut stacks, instructions) = get_boxes_and_instructions(text)?;
 
         for inst in instructions {
@@ -74,8 +71,7 @@ pub mod day05 {
         Ok(result)
     }
 
-    pub fn part2(response: Response) -> Result<String, Box<dyn std::error::Error>> {
-        let text = response.text()?;
+    pub fn part2(text: String) -> Result<String, Box<dyn std::error::Error>> {
         let (mut stacks, instructions) = get_boxes_and_instructions(text)?;
 
         for inst in instructions {
@@ -99,11 +95,11 @@ mod test {
 
     use super::day05;
 
-    const DAY: isize = 5;
+    const DAY: usize = 5;
 
     #[test]
     fn dataset() {
-        run_day(DAY, |r| Ok(r.text().unwrap()));
+        run_day(DAY, |text| Ok(text));
     }
 
     #[test]

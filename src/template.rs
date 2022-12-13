@@ -2,11 +2,11 @@
 pub mod template {
     use reqwest::blocking::Response;
 
-    pub fn part1(_response: Response) -> Result<isize, Box<dyn std::error::Error>> {
+    pub fn part1(text: String) -> Result<isize, Box<dyn std::error::Error>> {
         todo!("need to do it");
     }
 
-    pub fn part2(_response: Response) -> Result<isize, Box<dyn std::error::Error>> {
+    pub fn part2(text: String) -> Result<isize, Box<dyn std::error::Error>> {
         todo!("not doing it");
     }
 }
@@ -17,7 +17,7 @@ mod test {
 
     use super::template;
 
-    const DAY: isize = 1;
+    const DAY: usize = 1;
 
     #[test]
     fn part1() {

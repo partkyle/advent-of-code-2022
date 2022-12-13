@@ -3,7 +3,6 @@ pub mod day03 {
     use std::collections::HashSet;
 
     use itertools::Itertools;
-    use reqwest::blocking::Response;
 
     pub fn priority(c: char) -> u8 {
         if 'a' <= c && c <= 'z' {
@@ -28,9 +27,8 @@ pub mod day03 {
         result
     }
 
-    pub fn part1(response: Response) -> Result<i32, Box<dyn std::error::Error>> {
-        let result: i32 = response
-            .text()?
+    pub fn part1(text: String) -> Result<i32, Box<dyn std::error::Error>> {
+        let result: i32 = text
             .lines()
             .map(split_into_parts)
             .map(|[a, b]| [create_set_of_chars(a), create_set_of_chars(b)])
@@ -44,9 +42,8 @@ pub mod day03 {
         Ok(result)
     }
 
-    pub fn part2(response: Response) -> Result<i32, Box<dyn std::error::Error>> {
-        let result: i32 = response
-            .text()?
+    pub fn part2(text: String) -> Result<i32, Box<dyn std::error::Error>> {
+        let result: i32 = text
             .lines()
             .map(|bag| create_set_of_chars(bag))
             .chunks(3)
@@ -74,7 +71,7 @@ mod test {
 
     use super::day03::{self, priority, split_into_parts};
 
-    const DAY: isize = 3;
+    const DAY: usize = 3;
 
     #[test]
     fn alphabet_soup() {

@@ -1,6 +1,5 @@
 #[cfg(test)]
 pub mod day02 {
-    use reqwest::blocking::Response;
     use std::fmt::Debug;
 
     #[derive(Debug)]
@@ -153,17 +152,13 @@ pub mod day02 {
         }
     }
 
-    pub fn part1(response: Response) -> Result<isize, Box<dyn std::error::Error>> {
-        let text = response.text()?;
-
+    pub fn part1(text: String) -> Result<isize, Box<dyn std::error::Error>> {
         let matches: Result<Vec<RPSLine>, _> = text.lines().map(|line| line.try_into()).collect();
 
         Ok(matches?.iter().map(|m| m.score()).sum())
     }
 
-    pub fn part2(response: Response) -> Result<isize, Box<dyn std::error::Error>> {
-        let text = response.text()?;
-
+    pub fn part2(text: String) -> Result<isize, Box<dyn std::error::Error>> {
         let matches: Result<Vec<RPSLine2>, _> = text.lines().map(|line| line.try_into()).collect();
 
         Ok(matches?.iter().map(|m| m.score()).sum())
@@ -176,13 +171,15 @@ mod test {
 
     use super::day02::{self};
 
+    const DAY: usize = 2;
+
     #[test]
     fn part1() {
-        run_day(2, day02::part1);
+        run_day(DAY, day02::part1);
     }
 
     #[test]
     fn part2() {
-        run_day(2, day02::part2);
+        run_day(DAY, day02::part2);
     }
 }
