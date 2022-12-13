@@ -50,8 +50,7 @@ pub mod day07 {
         result
     }
 
-    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
-        let lines: Vec<&str> = text.lines().collect();
+    fn find_file_sizes(lines: Vec<&str>) -> HashMap<String, usize> {
         let mut cursor = 0;
 
         let root = Tree::new(Data::new("/"));
@@ -100,18 +99,48 @@ pub mod day07 {
         let mut data: HashMap<String, usize> = HashMap::new();
         sum_children_stored(&root, vec![], &mut data);
 
+        data
+    }
+
+    const MAX_SIZE: usize = 100000;
+
+    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
+        let data = find_file_sizes(text.lines().collect());
+
         let result = data
             .iter()
             .map(|(_, &size)| size)
             .sorted()
-            .filter(|&size| size <= 100000)
+            .filter(|&size| size <= MAX_SIZE)
             .sum();
 
         Ok(result)
     }
 
-    pub fn part2(text: String) -> Result<isize, Box<dyn std::error::Error>> {
-        todo!("not doing it");
+    const TOTAL_FILESYSTEM_SIZE: usize = 70000000;
+    const FREE_SPACE_NEEDED: usize = 30000000;
+
+    pub fn part2(text: String) -> Result<usize, Box<dyn std::error::Error>> {
+        let data = find_file_sizes(text.lines().collect());
+
+        let max = data
+            .iter()
+            .map(|(_, &i)| i)
+            .max()
+            .ok_or("no max value found")?;
+
+        let current_free_space = TOTAL_FILESYSTEM_SIZE - max;
+        let needed_free_space = FREE_SPACE_NEEDED - current_free_space;
+
+        let result = data
+            .iter()
+            .map(|(_, &i)| i)
+            .filter(|&i| i >= needed_free_space)
+            .sorted()
+            .next()
+            .ok_or("no answer matches criteria".into());
+
+        result
     }
 }
 
