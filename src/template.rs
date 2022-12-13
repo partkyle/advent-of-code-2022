@@ -1,7 +1,5 @@
 #[cfg(test)]
 pub mod template {
-    use reqwest::blocking::Response;
-
     pub fn part1(text: String) -> Result<isize, Box<dyn std::error::Error>> {
         todo!("need to do it");
     }
