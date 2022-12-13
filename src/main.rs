@@ -1,4 +1,5 @@
 mod helper;
+mod tree;
 
 mod day01;
 mod day02;
