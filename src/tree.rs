@@ -1,11 +1,11 @@
-mod tree {
+pub mod tree {
     use std::fmt::{self, Debug};
     use std::{cell::RefCell, rc::Rc};
 
     pub struct Tree<T: Debug> {
-        parent: Option<Rc<RefCell<Tree<T>>>>,
-        children: Vec<Rc<RefCell<Tree<T>>>>,
-        data: T,
+        pub parent: Option<Rc<RefCell<Tree<T>>>>,
+        pub children: Vec<Rc<RefCell<Tree<T>>>>,
+        pub data: T,
     }
 
     impl<T: Debug> fmt::Debug for Tree<T> {
