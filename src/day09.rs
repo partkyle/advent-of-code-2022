@@ -56,45 +56,44 @@ pub mod day09 {
 
     fn execute_move_chain(
         dir: &Direction,
-        snake: &Vec<RefCell<Coord>>,
+        snake: &mut Vec<Coord>,
         tail_positions: &mut HashSet<Coord>,
     ) {
-        let head = &snake[0];
         match dir {
             Direction::Up(count) => {
                 for _ in 0..*count {
-                    head.borrow_mut().y += 1;
-                    for window in snake[0..snake.len()].windows(2) {
-                        move_tail(&window[0].borrow(), &mut window[1].borrow_mut());
+                    snake[0].y += 1;
+                    for i in 0..snake.len() - 1 {
+                        move_tail(&snake[i].clone(), &mut snake[i + 1])
                     }
-                    tail_positions.insert(snake[snake.len() - 1].borrow().clone());
+                    tail_positions.insert(snake[snake.len() - 1].clone());
                 }
             }
             Direction::Down(count) => {
                 for _ in 0..*count {
-                    head.borrow_mut().y -= 1;
-                    for window in snake[0..snake.len()].windows(2) {
-                        move_tail(&window[0].borrow(), &mut window[1].borrow_mut());
+                    snake[0].y -= 1;
+                    for i in 0..snake.len() - 1 {
+                        move_tail(&snake[i].clone(), &mut snake[i + 1])
                     }
-                    tail_positions.insert(snake[snake.len() - 1].borrow().clone());
+                    tail_positions.insert(snake[snake.len() - 1].clone());
                 }
             }
             Direction::Left(count) => {
                 for _ in 0..*count {
-                    head.borrow_mut().x -= 1;
-                    for window in snake[0..snake.len()].windows(2) {
-                        move_tail(&window[0].borrow(), &mut window[1].borrow_mut());
+                    snake[0].x -= 1;
+                    for i in 0..snake.len() - 1 {
+                        move_tail(&snake[i].clone(), &mut snake[i + 1])
                     }
-                    tail_positions.insert(snake[snake.len() - 1].borrow().clone());
+                    tail_positions.insert(snake[snake.len() - 1].clone());
                 }
             }
             Direction::Right(count) => {
                 for _ in 0..*count {
-                    head.borrow_mut().x += 1;
-                    for window in snake[0..snake.len()].windows(2) {
-                        move_tail(&window[0].borrow(), &mut window[1].borrow_mut());
+                    snake[0].x += 1;
+                    for i in 0..snake.len() - 1 {
+                        move_tail(&snake[i].clone(), &mut snake[i + 1])
                     }
-                    tail_positions.insert(snake[snake.len() - 1].borrow().clone());
+                    tail_positions.insert(snake[snake.len() - 1].clone());
                 }
             }
         }
@@ -164,12 +163,12 @@ pub mod day09 {
         let dirs: Result<Vec<Direction>, _> = text.lines().map(|c| c.parse()).collect();
 
         let start = Coord { x: 0, y: 0 };
-        let snake: Vec<RefCell<Coord>> = (0..10).map(|_| RefCell::new(start.clone())).collect();
+        let mut snake: Vec<Coord> = (0..10).map(|_| start.clone()).collect();
 
         let mut tail_positions = HashSet::new();
 
         for dir in dirs? {
-            execute_move_chain(&dir, &snake, &mut tail_positions);
+            execute_move_chain(&dir, &mut snake, &mut tail_positions);
         }
 
         Ok(tail_positions.len())
