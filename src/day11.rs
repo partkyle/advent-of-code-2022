@@ -112,14 +112,21 @@ pub mod day11 {
         })
     }
 
-    fn execute_round_vec(monkeys: &mut Vec<Monkey>, inspections: &mut HashMap<isize, isize>) {
+    fn execute_round_vec<F>(
+        monkeys: &mut Vec<Monkey>,
+        inspections: &mut HashMap<isize, isize>,
+        worry_manager: &F,
+    ) where
+        F: Fn(isize) -> isize,
+    {
         for i in 0..monkeys.len() {
             let items = monkeys[i].items.clone();
             monkeys[i].items.clear();
 
             let items: Vec<isize> = items
                 .iter()
-                .map(|&item| monkeys[i].op.operate(item) / 3)
+                .map(|&item| monkeys[i].op.operate(item))
+                .map(worry_manager)
                 .collect();
 
             for item in items {
@@ -149,7 +156,7 @@ pub mod day11 {
         let rounds = 20;
 
         for _ in 0..rounds {
-            execute_round_vec(&mut monkeys, &mut inspections);
+            execute_round_vec(&mut monkeys, &mut inspections, &|i| i / 3);
         }
 
         let result: isize = inspections
@@ -163,8 +170,32 @@ pub mod day11 {
         Ok(result)
     }
 
-    pub fn part2(_text: String) -> Result<isize, Box<dyn std::error::Error>> {
-        todo!("do it");
+    pub fn part2(text: String) -> Result<isize, Box<dyn std::error::Error>> {
+        let data = text.split("\n\n");
+
+        let monkeys: Result<Vec<Monkey>, _> = data.map(parse_monkey).collect();
+        let mut monkeys = monkeys?;
+
+        let mut inspections: HashMap<isize, isize> =
+            HashMap::from_iter((0..monkeys.len()).map(|i| (i as isize, 0)));
+
+        let rounds = 10000;
+
+        let common_divisor: isize = monkeys.iter().map(|m| m.divisible_by).product();
+
+        for _ in 0..rounds {
+            execute_round_vec(&mut monkeys, &mut inspections, &|i| i % common_divisor);
+        }
+
+        let result: isize = inspections
+            .iter()
+            .map(|(_, v)| v)
+            .sorted()
+            .rev()
+            .take(2)
+            .product();
+
+        Ok(result)
     }
 
     #[cfg(test)]
