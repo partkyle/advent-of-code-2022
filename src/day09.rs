@@ -1,6 +1,6 @@
 #[cfg(test)]
 pub mod day09 {
-    use std::{cell::RefCell, collections::HashSet, str::FromStr};
+    use std::{collections::HashSet, str::FromStr};
 
     #[derive(Debug)]
     enum Direction {
