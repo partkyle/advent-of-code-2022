@@ -1,3 +1,5 @@
+#![allow(unused)] // FIXME
+
 #[cfg(test)]
 pub mod day12 {
     use std::{
@@ -97,9 +99,10 @@ pub mod day12 {
 
         let prev = djikstra(&g, start, end)?;
 
-        let path: Vec<(isize, isize)> = unroll(prev, start, end);
+        let mut path: Vec<(isize, isize)> = unroll(prev, end);
+        path.retain(|&e| e != start);
 
-        Ok(path.len() - 1)
+        Ok(path.len())
     }
 
     fn show_output(text: &str, path: &Vec<(isize, isize)>) -> String {
@@ -116,7 +119,6 @@ pub mod day12 {
 
     fn unroll(
         prev: HashMap<(isize, isize), (isize, isize)>,
-        start: (isize, isize),
         end: (isize, isize),
     ) -> Vec<(isize, isize)> {
         let mut result = vec![];
@@ -268,20 +270,13 @@ pub mod day12 {
             let prev = djikstra(&g, start, end);
 
             if let Ok(prev) = prev {
-                let path = unroll(prev, start, end);
-                distances.insert(path.len() - 1);
-
-                // println!("{}", show_output(&text[..], &path));
+                let mut path = unroll(prev, end);
+                path.retain(|&v| v != start);
+                distances.insert(path.len());
             }
         }
 
         return Ok(*distances.iter().min().unwrap() as isize);
-
-        // let prev = djikstra(g, start, end);
-
-        // let path: Vec<(isize, isize)> = unroll(prev, start, end);
-
-        // Ok(path.len() - 1)
     }
 
     #[cfg(test)]
