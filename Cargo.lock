@@ -9,6 +9,8 @@ dependencies = [
  "itertools",
  "priority-queue",
  "reqwest",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
