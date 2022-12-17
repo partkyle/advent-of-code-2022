@@ -43,7 +43,7 @@ pub mod day14 {
     }
 
     struct World {
-        cells: Vec<Tile>,
+        cells: Vec<Vec<Tile>>,
         size: usize,
         min: (usize, usize),
         max: (usize, usize),
@@ -52,7 +52,7 @@ pub mod day14 {
     impl World {
         fn new(size: usize) -> World {
             World {
-                cells: (0..size * size).map(|_| Tile::Air).collect(),
+                cells: (0..size).map(|_| (0..size).map(|_| Tile::Air).collect()).collect(),
                 size,
                 min: (usize::MAX, usize::MAX),
                 max: (0, 0),
@@ -60,15 +60,11 @@ pub mod day14 {
         }
 
         fn get(&self, loc: (usize, usize)) -> Option<&Tile> {
-            self.cells.get(self.cell_loc(loc))
+            self.cells.get(loc.1)?.get(loc.0)
         }
 
-        fn cell_loc(&self, loc: (usize, usize)) -> usize {
-            loc.0 + loc.1 * self.size
-        }
-
-        fn find_sands(&self) -> Vec<(usize, &Tile)> {
-            self.cells.iter().enumerate().filter(|(_, &tile)| tile == Tile::Sand).collect()
+        fn count_sands(&self) -> usize {
+            self.cells.iter().map(|row| row.iter().filter(|&&t| t == Tile::Sand).count()).sum()
         }
 
         fn update_loc_seen(&mut self, loc: (usize, usize)) {
@@ -78,8 +74,7 @@ pub mod day14 {
 
         fn set(&mut self, loc: (usize, usize), tile: Tile) {
             self.update_loc_seen(loc);
-            let i = self.cell_loc(loc);
-            self.cells[i] = tile;
+            self.cells[loc.1][loc.0] = tile;
         }
 
         fn draw_world(&self) {
@@ -108,8 +103,8 @@ pub mod day14 {
     }
 
     pub fn parse_input(input: &str) -> Vec<Vec<(usize, usize)>> {
-        // TODO: nom: why can't a I return a value here?
-        separated_list1(newline, line_nodes)(input).unwrap().1
+        let (_, result) = separated_list1(newline, line_nodes)(input).unwrap();
+        result
     }
 
     fn bottom_neighbors_ordered(loc: (usize, usize)) -> [(usize, usize); 3] {
@@ -123,9 +118,9 @@ pub mod day14 {
         ]
     }
 
-    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
-        let mut world = World::new(1000);
-        let list_of_line_nodes = parse_input(&text[..]);
+    fn populate_world(text: &str, size: usize) -> World {
+        let mut world = World::new(size);
+        let list_of_line_nodes = parse_input(text);
 
         for line_node in list_of_line_nodes {
             for window in line_node.windows(2) {
@@ -142,6 +137,11 @@ pub mod day14 {
             }
         }
 
+        world
+    }
+
+    pub fn part1(text: String) -> Result<usize, Box<dyn std::error::Error>> {
+        let mut world = populate_world(&text[..], 1000);
 
         world.draw_world();
 
@@ -174,11 +174,63 @@ pub mod day14 {
         }
 
         world.draw_world();
-        Ok(world.find_sands().iter().count())
+        Ok(world.count_sands())
     }
 
-    pub fn part2(_text: String) -> Result<isize, Box<dyn std::error::Error>> {
-        todo!("not doing it");
+    pub fn part2(text: String) -> Result<usize, Box<dyn std::error::Error>> {
+        let size = 1000;
+        let mut world = populate_world(&text[..], size);
+
+
+        let old_min = world.min;
+        let old_max = world.max;
+        let floor_y = world.max.1 + 2;
+        for x in 0..size {
+            world.set((x, floor_y), Tile::Rock);
+        }
+
+        world.min = old_min;
+        world.max = old_max;
+
+        world.draw_world();
+
+
+        let mut count = 0;
+        'outer: loop {
+            let mut current_loc = SAND_SPAWN;
+            loop {
+                let next_loc = bottom_neighbors_ordered(current_loc).iter().flat_map(|&loc|
+                    match world.get(loc) {
+                        Some(Tile::Air) => { Some(loc) }
+                        _ => None
+                    }
+                ).next();
+
+
+                match next_loc {
+                    Some(loc) => {
+                        current_loc = loc;
+                    }
+
+                    None => {
+                        // we are done if there is nowhere to go
+                        break;
+                    }
+                };
+            }
+            world.set(current_loc, Tile::Sand);
+            
+            if current_loc == SAND_SPAWN {
+                break 'outer;
+            }
+        }
+
+        println!("================================================================");
+        println!("================================================================");
+        println!("================================================================");
+        println!("================================================================");
+        world.draw_world();
+        Ok(world.count_sands())
     }
 
     #[cfg(test)]
