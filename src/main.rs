@@ -14,5 +14,10 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 
-fn main() {}
+use crate::day14::day14::part1;
+
+fn main() {
+    part1("".to_string());
+}

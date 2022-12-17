@@ -28,6 +28,12 @@ pub mod helper {
             .join(format!("{}.txt", day))
     }
 
+    fn cache_path_debug(day: usize) -> PathBuf {
+        PathBuf::new()
+            .join(LOCAL_CACHE_DIR)
+            .join(format!("{}.debug.txt", day))
+    }
+
     fn is_daily_cached(day: usize) -> bool {
         cache_path(day).exists()
     }
@@ -44,6 +50,14 @@ pub mod helper {
 
     fn read_cache_daily_args(day: usize) -> Result<String, Box<dyn Error>> {
         fs::read_to_string(cache_path(day)).map_err(|e| e.into())
+    }
+
+    fn read_cache_daily_args_debug(day: usize) -> Result<String, Box<dyn Error>> {
+        let p = cache_path_debug(day);
+        if !p.exists() {
+            fs::copy(cache_path(day), &p)?;
+        }
+        fs::read_to_string(p).map_err(|e| e.into())
     }
 
     fn query_daily_args(day: usize) -> Result<Response, Box<dyn Error>> {
@@ -70,6 +84,12 @@ pub mod helper {
 
     pub fn run_day<T: std::fmt::Display>(day: usize, f: fn(String) -> Result<T, Box<dyn Error>>) {
         let response = get_daily_args(day).unwrap();
+        let value = f(response);
+        println!("{}", value.unwrap());
+    }
+
+    pub fn dbg_day<T: std::fmt::Display>(day: usize, f: fn(String) -> Result<T, Box<dyn Error>>) {
+        let response = read_cache_daily_args_debug(day).unwrap();
         let value = f(response);
         println!("{}", value.unwrap());
     }
