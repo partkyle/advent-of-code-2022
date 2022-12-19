@@ -5,9 +5,9 @@ pub mod day14 {
     use nom::bytes::complete::tag;
     use nom::character::complete;
     use nom::character::complete::newline;
-    use nom::IResult;
     use nom::multi::separated_list1;
     use nom::sequence::separated_pair;
+    use nom::IResult;
 
     const SAND_SPAWN: (usize, usize) = (500, 0);
 
@@ -29,22 +29,15 @@ pub mod day14 {
     impl Tile {
         fn to_char(&self) -> char {
             match *self {
-                Tile::Air => {
-                    '.'
-                }
-                Tile::Rock => {
-                    '#'
-                }
-                Tile::Sand => {
-                    'O'
-                }
+                Tile::Air => '.',
+                Tile::Rock => '#',
+                Tile::Sand => 'O',
             }
         }
     }
 
     struct World {
         cells: Vec<Vec<Tile>>,
-        size: usize,
         min: (usize, usize),
         max: (usize, usize),
     }
@@ -52,8 +45,9 @@ pub mod day14 {
     impl World {
         fn new(size: usize) -> World {
             World {
-                cells: (0..size).map(|_| (0..size).map(|_| Tile::Air).collect()).collect(),
-                size,
+                cells: (0..size)
+                    .map(|_| (0..size).map(|_| Tile::Air).collect())
+                    .collect(),
                 min: (usize::MAX, usize::MAX),
                 max: (0, 0),
             }
@@ -64,7 +58,10 @@ pub mod day14 {
         }
 
         fn count_sands(&self) -> usize {
-            self.cells.iter().map(|row| row.iter().filter(|&&t| t == Tile::Sand).count()).sum()
+            self.cells
+                .iter()
+                .map(|row| row.iter().filter(|&&t| t == Tile::Sand).count())
+                .sum()
         }
 
         fn update_loc_seen(&mut self, loc: (usize, usize)) {
@@ -78,12 +75,13 @@ pub mod day14 {
         }
 
         fn draw_world(&self) {
-            let lines: Vec<String> = (self.min.1..=self.max.1).map(
-                |y|
-                    (self.min.0..=self.max.0).map(|x|
-                        self.get((x, y)).unwrap().to_char()
-                    ).collect()
-            ).collect();
+            let lines: Vec<String> = (self.min.1..=self.max.1)
+                .map(|y| {
+                    (self.min.0..=self.max.0)
+                        .map(|x| self.get((x, y)).unwrap().to_char())
+                        .collect()
+                })
+                .collect();
 
             for line in lines {
                 println!("{line}");
@@ -92,8 +90,7 @@ pub mod day14 {
     }
 
     fn point(input: &str) -> IResult<&str, (usize, usize)> {
-        let (input, (start, end)) =
-            separated_pair(complete::u32, tag(","), complete::u32)(input)?;
+        let (input, (start, end)) = separated_pair(complete::u32, tag(","), complete::u32)(input)?;
 
         Ok((input, (start as usize, end as usize)))
     }
@@ -148,13 +145,13 @@ pub mod day14 {
         'outer: loop {
             let mut current_loc = SAND_SPAWN;
             loop {
-                let next_loc = bottom_neighbors_ordered(current_loc).iter().flat_map(|&loc|
-                    match world.get(loc) {
-                        Some(Tile::Air) => { Some(loc) }
-                        _ => None
-                    }
-                ).next();
-
+                let next_loc = bottom_neighbors_ordered(current_loc)
+                    .iter()
+                    .flat_map(|&loc| match world.get(loc) {
+                        Some(Tile::Air) => Some(loc),
+                        _ => None,
+                    })
+                    .next();
 
                 match next_loc {
                     Some(loc) => {
@@ -181,7 +178,6 @@ pub mod day14 {
         let size = 1000;
         let mut world = populate_world(&text[..], size);
 
-
         let old_min = world.min;
         let old_max = world.max;
         let floor_y = world.max.1 + 2;
@@ -194,18 +190,16 @@ pub mod day14 {
 
         world.draw_world();
 
-
-        let mut count = 0;
         'outer: loop {
             let mut current_loc = SAND_SPAWN;
             loop {
-                let next_loc = bottom_neighbors_ordered(current_loc).iter().flat_map(|&loc|
-                    match world.get(loc) {
-                        Some(Tile::Air) => { Some(loc) }
-                        _ => None
-                    }
-                ).next();
-
+                let next_loc = bottom_neighbors_ordered(current_loc)
+                    .iter()
+                    .flat_map(|&loc| match world.get(loc) {
+                        Some(Tile::Air) => Some(loc),
+                        _ => None,
+                    })
+                    .next();
 
                 match next_loc {
                     Some(loc) => {
@@ -219,7 +213,7 @@ pub mod day14 {
                 };
             }
             world.set(current_loc, Tile::Sand);
-            
+
             if current_loc == SAND_SPAWN {
                 break 'outer;
             }
@@ -262,5 +256,3 @@ pub mod day14 {
         }
     }
 }
-
-
