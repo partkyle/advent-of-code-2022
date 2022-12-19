@@ -8,13 +8,12 @@ pub mod template {
         todo!("not doing it");
     }
 
-    #[cfg(test)]
     mod test {
-        use crate::helper::helper::run_day;
+        use crate::helper::helper::{dbg_day, run_day};
 
         use super::*;
 
-        const DAY: usize = 1;
+        const DAY: usize = 15;
 
         #[test]
         fn test_part1() {
@@ -24,6 +23,16 @@ pub mod template {
         #[test]
         fn test_part2() {
             run_day(DAY, part2);
+        }
+
+        #[test]
+        fn dbg_part1() {
+            dbg_day(DAY, part1);
+        }
+
+        #[test]
+        fn dbg_part2() {
+            dbg_day(DAY, part2);
         }
     }
 }
